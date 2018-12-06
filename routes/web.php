@@ -15,39 +15,33 @@ use Illuminate\Support\Facades\Validator;
 |
 */
 
-//Route::get('/', function () {
-//    return view('welcome');
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
+// 認証ルート…
+Route::get('auth/login', 'Auth\LoginController@getLogin');
+Route::post('auth/login', 'Auth\LoginController@postLogin');
+Route::get('auth/logout', 'Auth\LoginController@getLogout');
+
+// 登録ルート…
+Route::get('auth/register', 'Auth\RegisterController@getRegister');
+Route::post('auth/register', 'Auth\RegisterController@postRegister');
+
+Route::get('/tasks', 'TasksController@index');
+Route::post('/task', 'TasksController@store');
+Route::delete('/task/{task}', 'TasksController@destroy');
+//Route::delete('/task/{task}', 'TasksController@destroy');
+
+
+//// 既存のタスクを削除
+//Route::delete('/task/{id}', function ($id) {
+//    Task::findOrFail($id)->delete();
+//
+//    return redirect('/');
 //});
 
-Route::get('/', function () {
-    $tasks = Task::orderBy('created_at', 'asc')->get();
-    return view('tasks', [
-        'tasks' => $tasks
-    ]);
-});
+Auth::routes();
 
-// タスクを追加
-Route::post('/task', function (Request $request) {
-    $validator = Validator::make($request->all(), [
-       'name' => 'required|max:255',
-    ]);
-
-    if ($validator->fails()) {
-        return redirect('/')
-            ->withInput()
-            ->withErrors($validator);
-    }
-
-    $task = new Task;
-    $task->name = $request->name;
-    $task->save();
-
-    return redirect('/');
-});
-
-// 既存のタスクを削除
-Route::delete('/task/{id}', function ($id) {
-    Task::findOrFail($id)->delete();
-
-    return redirect('/');
-});
+Route::get('/home', 'HomeController@index')->name('home');
